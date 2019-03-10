@@ -7,7 +7,7 @@
 SHELL:=/bin/bash
 
 # mode of the network: solo, kafka, couchdb, event, dev
-HLF_MODE ?= solo
+HLF_MODE ?= cert
 
 NETWORK_INIT_WAIT ?= 2 # time to wait the fabric network finish initialization
 
