@@ -34,7 +34,7 @@ configtxgen \
 configtxgen \
 	-inspectChannelCreateTx ${APP_CHANNEL_TX} > ${APP_CHANNEL_TX}.json
 
-echo "Create the anchor peer configuration tx for org1 and org2"
+echo "Create the anchor peer configuration tx for ktb ind cml and pol"
 configtxgen \
 	-configPath /tmp \
 	-profile ${APP_CHANNEL_PROFILE} \
@@ -49,7 +49,21 @@ configtxgen \
 	-asOrg ${ORG2MSP} \
 	-outputAnchorPeersUpdate ${UPDATE_ANCHOR_ORG2_TX}
 
-echo "Output the json for org1, org2 and org3"
+configtxgen \
+  -configPath /tmp \
+  -profile ${APP_CHANNEL_PROFILE} \
+  -channelID ${APP_CHANNEL} \
+  -asOrg ${ORG3MSP} \
+  -outputAnchorPeersUpdate ${UPDATE_ANCHOR_ORG3_TX}
+
+configtxgen \
+  -configPath /tmp \
+  -profile ${APP_CHANNEL_PROFILE} \
+  -channelID ${APP_CHANNEL} \
+  -asOrg ${ORG4MSP} \
+  -outputAnchorPeersUpdate ${UPDATE_ANCHOR_ORG4_TX}
+
+echo "Output the json for org1, org2, org3 and org4"
 configtxgen \
 	-configPath /tmp \
 	-printOrg ${ORG1MSP} >${ORG1MSP}.json
@@ -61,3 +75,7 @@ configtxgen \
 configtxgen \
 	-configPath /tmp/org3/ \
 	-printOrg ${ORG3MSP} >${ORG3MSP}.json
+
+configtxgen \
+	-configPath /tmp/org4/ \
+	-printOrg ${ORG4MSP} >${ORG4MSP}.json

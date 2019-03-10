@@ -1,0 +1,191 @@
+# https://github.com/yeasy/docker-compose-files/tree/master/hyperledger
+# This compose file will start a Hyperledger Fabric 1.0 MVE, including
+# * 2 ca (not in use now)
+# * 1 orderer
+# * 4 peers in 2 orgs
+# * cli for testing
+
+version: '2.0'
+
+services:
+# ca.ktb.cert.com:
+#   extends:
+#     file: base-kafka.yaml
+#     service: ca.ktb.cert.com
+
+# ca.ind.cert.com:
+#   extends:
+#     file: base-kafka.yaml
+#     service: ca.ind.cert.com
+
+  cli:
+    extends:
+      file: base-kafka.yaml
+      service: cli
+
+  orderer0.cert.com:  # There  can be multiple orderers
+    extends:
+      file: base-kafka.yaml
+      service: orderer0.cert.com
+    depends_on:
+      - kafka0
+      - kafka1
+      - kafka2
+      - kafka3
+
+  orderer1.cert.com:  # There  can be multiple orderers
+    extends:
+      file: base-kafka.yaml
+      service: orderer1.cert.com
+    depends_on:
+    - kafka0
+    - kafka1
+    - kafka2
+    - kafka3
+
+  peer0.ktb.cert.com:
+    extends:
+      file: base-kafka.yaml
+      service: peer0.ktb.cert.com
+    depends_on:
+      - orderer0.cert.com
+      - orderer1.cert.com
+
+  peer1.ktb.cert.com:
+    extends:
+      file: base-kafka.yaml
+      service: peer1.ktb.cert.com
+    depends_on:
+    - orderer0.cert.com
+    - orderer1.cert.com
+
+  peer0.ind.cert.com:
+    extends:
+      file: base-kafka.yaml
+      service: peer0.ind.cert.com
+    depends_on:
+    - orderer0.cert.com
+    - orderer1.cert.com
+
+  peer1.ind.cert.com:
+    extends:
+      file: base-kafka.yaml
+      service: peer1.ind.cert.com
+    depends_on:
+    - orderer0.cert.com
+    - orderer1.cert.com
+
+  peer0.cml.cert.com:
+    extends:
+      file: base-kafka.yaml
+      service: peer0.cml.cert.com
+    depends_on:
+    - orderer0.cert.com
+    - orderer1.cert.com
+
+  peer1.cml.cert.com:
+    extends:
+      file: base-kafka.yaml
+      service: peer1.cml.cert.com
+    depends_on:
+    - orderer0.cert.com
+    - orderer1.cert.com
+
+  peer0.cml.cert.com:
+    extends:
+      file: base-kafka.yaml
+      service: peer0.cml.cert.com
+    depends_on:
+    - orderer0.cert.com
+    - orderer1.cert.com
+
+  peer1.pol.cert.com:
+    extends:
+      file: base-kafka.yaml
+      service: peer1.pol.cert.com
+    depends_on:
+    - orderer0.cert.com
+    - orderer1.cert.com
+
+# ZooKeeper services, at least 3 nodes
+  zookeeper0:
+    extends:
+      file: base-kafka.yaml
+      service: zookeeper0
+
+  zookeeper1:
+    extends:
+      file: base-kafka.yaml
+      service: zookeeper1
+
+  zookeeper2:
+    extends:
+      file: base-kafka.yaml
+      service: zookeeper2
+
+# Kafka services, at least 4 node to tolerant work with 1 node failure
+  kafka0:
+    extends:
+      file: base-kafka.yaml
+      service: kafka0
+    depends_on:
+      - zookeeper0
+      - zookeeper1
+      - zookeeper2
+
+  kafka1:
+    extends:
+      file: base-kafka.yaml
+      service: kafka1
+    depends_on:
+      - zookeeper0
+      - zookeeper1
+      - zookeeper2
+
+  kafka2:
+    extends:
+      file: base-kafka.yaml
+      service: kafka2
+    depends_on:
+      - zookeeper0
+      - zookeeper1
+      - zookeeper2
+
+  kafka3:
+    extends:
+      file: base-kafka.yaml
+      service: kafka3
+    depends_on:
+      - zookeeper0
+      - zookeeper1
+      - zookeeper2
+
+  explorer:
+    extends:
+      file: base.yaml
+      service: explorer-base
+    container_name: explorer
+    hostname: explorer
+    depends_on:
+      - mysql
+    volumes:
+      - ./explorer-artifacts/config.json:/blockchain-explorer/config.json
+      - ./crypto-config:/blockchain-explorer/first-network/crypto-config
+    ports:
+      - "8080:8080"  # HTTP port
+
+  mysql: # mysql service
+    extends:
+      file: base.yaml
+      service: mysql-base
+    container_name: mysql
+    hostname: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=fabricexplorer
+    volumes:
+      - ./explorer-artifacts/fabricexplorer.sql:/docker-entrypoint-initdb.d/fabricexplorer.sql
+#networks:
+#  default:
+#    external:
+#      name: hyperledger_fabric

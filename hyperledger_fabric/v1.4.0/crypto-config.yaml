@@ -11,11 +11,11 @@ OrdererOrgs:
   # Orderer
   # ---------------------------------------------------------------------------
   - Name: Orderer
-    Domain: example.com
+    Domain: cert.com
     CA:
-        Country: US
-        Province: California
-        Locality: San Francisco
+        Country: TH
+        Province: Bangkok
+        Locality: Bangkok
 #    Template:
 #        Count: 2
     # ---------------------------------------------------------------------------
@@ -29,15 +29,15 @@ OrdererOrgs:
 # ---------------------------------------------------------------------------
 PeerOrgs:
   # ---------------------------------------------------------------------------
-  # Org1
+  # Ktb
   # ---------------------------------------------------------------------------
-  - Name: Org1
-    Domain: org1.example.com
+  - Name: Ktb
+    Domain: ktb.cert.com
     EnableNodeOUs: true
     CA:
-        Country: US
-        Province: California
-        Locality: San Francisco
+        Country: TH
+        Province: Bangkok
+        Locality: Bangkok
     # ---------------------------------------------------------------------------
     # "Specs"
     # ---------------------------------------------------------------------------
@@ -55,8 +55,8 @@ PeerOrgs:
     #                 Org.Domain, respectively.
     # ---------------------------------------------------------------------------
     # Specs:
-    #   - Hostname: foo # implicitly "foo.org1.example.com"
-    #     CommonName: foo27.org5.example.com # overrides Hostname-based FQDN set above
+    #   - Hostname: foo # implicitly "foo.ktb.cert.com"
+    #     CommonName: foo27.org5.cert.com # overrides Hostname-based FQDN set above
     #   - Hostname: bar
     #   - Hostname: baz
     # ---------------------------------------------------------------------------
@@ -83,15 +83,39 @@ PeerOrgs:
     Users:
       Count: 1
   # ---------------------------------------------------------------------------
-  # Org2: See "Org1" for full specification
+  # Org2: See "Ktb" for full specification
   # ---------------------------------------------------------------------------
-  - Name: Org2
-    Domain: org2.example.com
+  - Name: Ind
+    Domain: ind.cert.com
     EnableNodeOUs: true
     CA:
-        Country: US
-        Province: California
-        Locality: San Francisco
+        Country: TH
+        Province: Bangkok
+        Locality: Bangkok
+    Template:
+      Count: 2
+    Users:
+      Count: 1
+
+  - Name: Cml
+    Domain: cml.cert.com
+    EnableNodeOUs: true
+    CA:
+        Country: TH
+        Province: Bangkok
+        Locality: Bangkok
+    Template:
+      Count: 2
+    Users:
+      Count: 1
+
+  - Name: Pol
+    Domain: pol.cert.com
+    EnableNodeOUs: true
+    CA:
+        Country: TH
+        Province: Bangkok
+        Locality: Bangkok
     Template:
       Count: 2
     Users:
