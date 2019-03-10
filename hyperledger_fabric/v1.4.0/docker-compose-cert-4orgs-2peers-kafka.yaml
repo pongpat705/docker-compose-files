@@ -10,22 +10,22 @@ version: '2.0'
 services:
 # ca.ktb.cert.com:
 #   extends:
-#     file: base-kafka.yaml
+#     file: base-kafka-cert.yaml
 #     service: ca.ktb.cert.com
 
 # ca.ind.cert.com:
 #   extends:
-#     file: base-kafka.yaml
+#     file: base-kafka-cert.yaml
 #     service: ca.ind.cert.com
 
   cli:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: cli
 
   orderer0.cert.com:  # There  can be multiple orderers
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: orderer0.cert.com
     depends_on:
       - kafka0
@@ -35,7 +35,7 @@ services:
 
   orderer1.cert.com:  # There  can be multiple orderers
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: orderer1.cert.com
     depends_on:
     - kafka0
@@ -45,7 +45,7 @@ services:
 
   peer0.ktb.cert.com:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: peer0.ktb.cert.com
     depends_on:
       - orderer0.cert.com
@@ -53,7 +53,7 @@ services:
 
   peer1.ktb.cert.com:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: peer1.ktb.cert.com
     depends_on:
     - orderer0.cert.com
@@ -61,7 +61,7 @@ services:
 
   peer0.ind.cert.com:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: peer0.ind.cert.com
     depends_on:
     - orderer0.cert.com
@@ -69,7 +69,7 @@ services:
 
   peer1.ind.cert.com:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: peer1.ind.cert.com
     depends_on:
     - orderer0.cert.com
@@ -77,7 +77,7 @@ services:
 
   peer0.cml.cert.com:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: peer0.cml.cert.com
     depends_on:
     - orderer0.cert.com
@@ -85,7 +85,7 @@ services:
 
   peer1.cml.cert.com:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: peer1.cml.cert.com
     depends_on:
     - orderer0.cert.com
@@ -93,7 +93,7 @@ services:
 
   peer0.cml.cert.com:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: peer0.cml.cert.com
     depends_on:
     - orderer0.cert.com
@@ -101,7 +101,7 @@ services:
 
   peer1.pol.cert.com:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: peer1.pol.cert.com
     depends_on:
     - orderer0.cert.com
@@ -110,23 +110,23 @@ services:
 # ZooKeeper services, at least 3 nodes
   zookeeper0:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: zookeeper0
 
   zookeeper1:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: zookeeper1
 
   zookeeper2:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: zookeeper2
 
 # Kafka services, at least 4 node to tolerant work with 1 node failure
   kafka0:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: kafka0
     depends_on:
       - zookeeper0
@@ -135,7 +135,7 @@ services:
 
   kafka1:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: kafka1
     depends_on:
       - zookeeper0
@@ -144,7 +144,7 @@ services:
 
   kafka2:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: kafka2
     depends_on:
       - zookeeper0
@@ -153,7 +153,7 @@ services:
 
   kafka3:
     extends:
-      file: base-kafka.yaml
+      file: base-kafka-cert.yaml
       service: kafka3
     depends_on:
       - zookeeper0

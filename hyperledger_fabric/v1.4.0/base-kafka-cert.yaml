@@ -1,0 +1,393 @@
+# All elements in this file should depend on the base.yaml
+# Provided a Kafka enabled fabric network with:
+
+# ca.ktb.cert.com
+# ca.ind.cert.com
+# orderer0.cert.com
+# orderer1.cert.com
+# peer0.ktb.cert.com
+# peer1.ktb.cert.com
+# peer0.ind.cert.com
+# peer1.ind.cert.com
+# 3 zookeeper nodes
+# 4 kafka nodes
+# cli
+
+version: '2'  # v3 does not support 'extends' yet
+
+services:
+  ca.ktb.cert.com:
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: ca.ktb.cert.com
+    hostname: ca.ktb.cert.com
+    environment:
+      - FABRIC_CA_SERVER_CA_NAME=ca-ktb
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.ktb.cert.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/83ee9b846332a6ab428241ad0ada118b08b7a832954c1b68d206459d38cc1df4_sk
+    ports:
+      - "7054:7054"
+    volumes:
+      - ./crypto-config/peerOrganizations/ktb.cert.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.ktb.cert.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/83ee9b846332a6ab428241ad0ada118b08b7a832954c1b68d206459d38cc1df4_sk -b admin:adminpw -d'
+
+  ca.ind.cert.com:
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: ca.ind.cert.com
+    hostname: ca.ind.cert.com
+    environment:
+      - FABRIC_CA_SERVER_CA_NAME=ca-ind
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.ind.cert.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/ae1d6568854893b381f9d9a935a79b636596f531a749dcb77af8679ae997bc9d_sk
+    ports:
+      - "8054:7054"
+    volumes:
+      - ./crypto-config/peerOrganizations/ind.cert.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.ind.cert.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/ae1d6568854893b381f9d9a935a79b636596f531a749dcb77af8679ae997bc9d_sk -b admin:adminpw -d'
+
+  ca.cml.cert.com:
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: ca.cml.cert.com
+    hostname: ca.cml.cert.com
+    environment:
+      - FABRIC_CA_SERVER_CA_NAME=ca-cml
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.cml.cert.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/4cccea37f3afb53e3fae6c3f003d88e38fe6dc917843f7cc6511d8e64451c357_sk
+    ports:
+      - "9054:7054"
+    volumes:
+      - ./crypto-config/peerOrganizations/cml.cert.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.cml.cert.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/4cccea37f3afb53e3fae6c3f003d88e38fe6dc917843f7cc6511d8e64451c357_sk -b admin:adminpw -d'
+
+  ca.pol.cert.com:
+    extends:
+      file: base.yaml
+      service: ca-base
+    container_name: ca.pol.cert.com
+    hostname: ca.pol.cert.com
+    environment:
+      - FABRIC_CA_SERVER_CA_NAME=ca-pol
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.pol.cert.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/443eac3a45ac9057fe502935dbf5b679765857bf445e93bb5d80c449abdd31ae_sk
+    ports:
+      - "10054:7054"
+    volumes:
+      - ./crypto-config/peerOrganizations/pol.cert.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.pol.cert.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/443eac3a45ac9057fe502935dbf5b679765857bf445e93bb5d80c449abdd31ae_sk -b admin:adminpw -d'
+
+
+  orderer0.cert.com:  # There can be multiple orderers
+    extends:
+      file: base.yaml
+      service: orderer-base
+    container_name: orderer0.cert.com
+    hostname: orderer0.cert.com
+    ports:
+      - "7050:7050"
+    environment:
+      # Kafka related configurations
+      - ORDERER_KAFKA_RETRY_SHORTINTERVAL=1s
+      - ORDERER_KAFKA_RETRY_SHORTTOTAL=30s
+      - ORDERER_KAFKA_VERBOSE=true
+    volumes:
+    - ./crypto-config/ordererOrganizations/cert.com/orderers/orderer0.cert.com/msp:/var/hyperledger/orderer/msp
+    - ./crypto-config/ordererOrganizations/cert.com/orderers/orderer0.cert.com/tls/:/var/hyperledger/orderer/tls
+    - ./kafka/channel-artifacts/orderer.genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+    command: orderer start
+
+  orderer1.cert.com:  # There can be multiple orderers
+    extends:
+      file: base.yaml
+      service: orderer-base
+    container_name: orderer1.cert.com
+    hostname: orderer1.cert.com
+    ports:
+      - "8050:7050"
+    environment:
+      # Kafka related configurations
+      - ORDERER_KAFKA_RETRY_SHORTINTERVAL=1s
+      - ORDERER_KAFKA_RETRY_SHORTTOTAL=30s
+      - ORDERER_KAFKA_VERBOSE=true
+    volumes:
+    - ./crypto-config/ordererOrganizations/cert.com/orderers/orderer1.cert.com/msp:/var/hyperledger/orderer/msp
+    - ./crypto-config/ordererOrganizations/cert.com/orderers/orderer1.cert.com/tls/:/var/hyperledger/orderer/tls
+    - ./kafka/channel-artifacts/orderer.genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+    command: orderer start
+
+  cli:
+    extends:
+      file: base.yaml
+      service: cli-base
+    container_name: fabric-cli
+    hostname: fabric-cli
+    tty: true
+    environment:
+      - CORE_PEER_ID=fabric-cli
+      - CORE_PEER_ADDRESS=peer0.ktb.cert.com:7051 # default to operate on peer0.ktb
+      - CORE_PEER_LOCALMSPID=KtbMSP
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/crypto-config/peerOrganizations/ktb.cert.com/peers/peer0.ktb.cert.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/crypto-config/peerOrganizations/ktb.cert.com/peers/peer0.ktb.cert.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/crypto-config/peerOrganizations/ktb.cert.com/peers/peer0.ktb.cert.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/crypto-config/peerOrganizations/ktb.cert.com/users/Admin@ktb.cert.com/msp
+    volumes:
+        - ./scripts:/tmp/scripts
+        - ./crypto-config.yaml:/etc/hyperledger/fabric/crypto-config.yaml
+        - ./crypto-config:/etc/hyperledger/fabric/crypto-config
+        - ./kafka/channel-artifacts:/tmp/channel-artifacts
+        - ./kafka/configtx.yaml:/etc/hyperledger/fabric/configtx.yaml
+        - ./certs:/opt/gopath/src/certs
+
+## following are peer nodes ##
+
+  peer0.ktb.cert.com:
+    extends:
+      file: base.yaml
+      service: peer-base
+    container_name: peer0.ktb.cert.com
+    hostname: peer0.ktb.cert.com
+    environment:
+      - CORE_PEER_ID=peer0.ktb.cert.com
+      - CORE_PEER_ADDRESS=peer0.ktb.cert.com:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.ktb.cert.com:7052
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.ktb.cert.com:7051
+      - CORE_PEER_LOCALMSPID=KtbMSP
+    volumes:
+        - ./crypto-config/peerOrganizations/ktb.cert.com/peers/peer0.ktb.cert.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/ktb.cert.com/peers/peer0.ktb.cert.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 7051:7051
+      - 7052:7052
+      - 7053:7053
+
+  peer1.ktb.cert.com:
+    extends:
+      file: base.yaml
+      service: peer-base
+    container_name: peer1.ktb.cert.com
+    hostname: peer1.ktb.cert.com
+    environment:
+      - CORE_PEER_ID=peer1.ktb.cert.com
+      - CORE_PEER_ADDRESS=peer1.ktb.cert.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.ktb.cert.com:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer1.ktb.cert.com:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.ktb.cert.com:7051
+      - CORE_PEER_LOCALMSPID=KtbMSP
+    volumes:
+        - ./crypto-config/peerOrganizations/ktb.cert.com/peers/peer1.ktb.cert.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/ktb.cert.com/peers/peer1.ktb.cert.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 8051:7051
+      - 8052:7052
+      - 8053:7053
+
+  peer0.ind.cert.com:
+    extends:
+      file: base.yaml
+      service: peer-base
+    container_name: peer0.ind.cert.com
+    hostname: peer0.ind.cert.com
+    environment:
+      - CORE_PEER_ID=peer0.ind.cert.com
+      - CORE_PEER_ADDRESS=peer0.ind.cert.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.ind.cert.com:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.ind.cert.com:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.ind.cert.com:7051
+      - CORE_PEER_LOCALMSPID=IndMSP
+    volumes:
+        - ./crypto-config/peerOrganizations/ind.cert.com/peers/peer0.ind.cert.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/ind.cert.com/peers/peer0.ind.cert.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 9051:7051
+      - 9052:7052
+      - 9053:7053
+
+  peer1.ind.cert.com:
+    extends:
+      file: base.yaml
+      service: peer-base
+    container_name: peer1.ind.cert.com
+    hostname: peer1.ind.cert.com
+    environment:
+      - CORE_PEER_ID=peer1.ind.cert.com
+      - CORE_PEER_ADDRESS=peer1.ind.cert.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.ind.cert.com:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer1.ind.cert.com:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.ind.cert.com:7051
+      - CORE_PEER_LOCALMSPID=IndMSP
+    volumes:
+        - ./crypto-config/peerOrganizations/ind.cert.com/peers/peer1.ind.cert.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/ind.cert.com/peers/peer1.ind.cert.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 10051:7051
+      - 10052:7052
+      - 10053:7053
+
+  peer0.cml.cert.com:
+    extends:
+      file: base.yaml
+      service: peer-base
+    container_name: peer0.cml.cert.com
+    hostname: peer0.cml.cert.com
+    environment:
+      - CORE_PEER_ID=peer0.cml.cert.com
+      - CORE_PEER_ADDRESS=peer0.cml.cert.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.cml.cert.com:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.cml.cert.com:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.cml.cert.com:7051
+      - CORE_PEER_LOCALMSPID=CmlMSP
+    volumes:
+        - ./crypto-config/peerOrganizations/cml.cert.com/peers/peer0.cml.cert.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/cml.cert.com/peers/peer0.cml.cert.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 11051:7051
+      - 11052:7052
+      - 11053:7053
+
+  peer1.cml.cert.com:
+    extends:
+      file: base.yaml
+      service: peer-base
+    container_name: peer1.cml.cert.com
+    hostname: peer1.cml.cert.com
+    environment:
+      - CORE_PEER_ID=peer1.cml.cert.com
+      - CORE_PEER_ADDRESS=peer1.cml.cert.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.cml.cert.com:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer1.cml.cert.com:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.cml.cert.com:7051
+      - CORE_PEER_LOCALMSPID=CmlMSP
+    volumes:
+        - ./crypto-config/peerOrganizations/cml.cert.com/peers/peer1.cml.cert.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/cml.cert.com/peers/peer1.cml.cert.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 12051:7051
+      - 12052:7052
+      - 12053:7053
+
+  peer0.pol.cert.com:
+    extends:
+      file: base.yaml
+      service: peer-base
+    container_name: peer0.pol.cert.com
+    hostname: peer0.pol.cert.com
+    environment:
+      - CORE_PEER_ID=peer0.pol.cert.com
+      - CORE_PEER_ADDRESS=peer0.pol.cert.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.pol.cert.com:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer0.pol.cert.com:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.pol.cert.com:7051
+      - CORE_PEER_LOCALMSPID=PolMSP
+    volumes:
+        - ./crypto-config/peerOrganizations/pol.cert.com/peers/peer0.pol.cert.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/pol.cert.com/peers/peer0.pol.cert.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 13051:7051
+      - 13052:7052
+      - 13053:7053
+
+  peer1.pol.cert.com:
+    extends:
+      file: base.yaml
+      service: peer-base
+    container_name: peer1.pol.cert.com
+    hostname: peer1.pol.cert.com
+    environment:
+      - CORE_PEER_ID=peer1.pol.cert.com
+      - CORE_PEER_ADDRESS=peer1.pol.cert.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.pol.cert.com:7051
+      - CORE_PEER_CHAINCODELISTENADDRESS=peer1.pol.cert.com:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.pol.cert.com:7051
+      - CORE_PEER_LOCALMSPID=PolMSP
+    volumes:
+        - ./crypto-config/peerOrganizations/pol.cert.com/peers/peer1.pol.cert.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/pol.cert.com/peers/peer1.pol.cert.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 14051:7051
+      - 14052:7052
+      - 14053:7053
+
+
+# ZooKeeper services, at least 3 nodes
+  zookeeper0:
+    extends:
+      file: base.yaml
+      service: zookeeper-base
+    container_name: zookeeper0
+    hostname: zookeeper0
+    environment:
+      - ZOO_MY_ID=1
+      - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+
+  zookeeper1:
+    extends:
+      file: base.yaml
+      service: zookeeper-base
+    container_name: zookeeper1
+    hostname: zookeeper1
+    environment:
+      - ZOO_MY_ID=2
+      - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+
+  zookeeper2:
+    extends:
+      file: base.yaml
+      service: zookeeper-base
+    container_name: zookeeper2
+    hostname: zookeeper2
+    environment:
+      - ZOO_MY_ID=3
+      - ZOO_SERVERS=server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888
+
+# Kafka services, at least 4 node to tolerant work with 1 node failure
+  kafka0:
+    extends:
+      file: base.yaml
+      service: kafka-base
+    container_name: kafka0
+    hostname: kafka0
+    environment:
+      - KAFKA_BROKER_ID=0
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+
+  kafka1:
+    extends:
+      file: base.yaml
+      service: kafka-base
+    container_name: kafka1
+    hostname: kafka1
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+
+  kafka2:
+    extends:
+      file: base.yaml
+      service: kafka-base
+    container_name: kafka2
+    hostname: kafka2
+    environment:
+      - KAFKA_BROKER_ID=2
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
+
+  kafka3:
+    extends:
+      file: base.yaml
+      service: kafka-base
+    container_name: kafka3
+    hostname: kafka3
+    environment:
+      - KAFKA_BROKER_ID=3
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0:2181,zookeeper1:2181,zookeeper2:2181
