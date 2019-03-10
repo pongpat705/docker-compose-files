@@ -73,9 +73,9 @@ configtxgen \
 	-printOrg ${ORG2MSP} >${ORG2MSP}.json
 
 configtxgen \
-	-configPath /tmp/org3/ \
+	-configPath /tmp/ \
 	-printOrg ${ORG3MSP} >${ORG3MSP}.json
 
 configtxgen \
-	-configPath /tmp/org4/ \
+	-configPath /tmp/ \
 	-printOrg ${ORG4MSP} >${ORG4MSP}.json
