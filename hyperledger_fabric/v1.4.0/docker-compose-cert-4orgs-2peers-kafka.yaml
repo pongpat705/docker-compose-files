@@ -185,6 +185,22 @@ services:
       - MYSQL_DATABASE=fabricexplorer
     volumes:
       - ./explorer-artifacts/fabricexplorer.sql:/docker-entrypoint-initdb.d/fabricexplorer.sql
+
+  prometheus:
+    extends:
+      file: base-kafka-cert.yaml
+      service: prometheus
+    depends_on:
+      - orderer0.cert.com
+      - orderer1.cert.com
+      - peer0.ktb.cert.com
+      - peer1.ktb.cert.com
+      - peer0.ind.cert.com
+      - peer1.ind.cert.com
+      - peer0.cml.cert.com
+      - peer1.cml.cert.com
+      - peer0.pol.cert.com
+      - peer1.pol.cert.com
 #networks:
 #  default:
 #    external:
