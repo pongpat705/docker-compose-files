@@ -28,6 +28,8 @@ else ifeq ($(HLF_MODE),be)
 else ifeq ($(HLF_MODE),dev)
 	COMPOSE_FILE="docker-compose-1orgs-1peers-dev.yaml"
 	NETWORK_INIT_WAIT=40
+else ifeq ($(HLF_MODE),cert)
+	COMPOSE_FILE="docker-compose-cert-4orgs-2peers-kafka.yaml"
 endif
 
 all: test
